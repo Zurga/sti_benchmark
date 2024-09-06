@@ -31,37 +31,6 @@ CREATE TABLE likes (
     -- REFERENCES posts(post_id) -- Add a placeholder reference constraint to posts (we'll add dynamic triggers to handle others)
 );
 
--- Function to enforce referential integrity in the likes table
-CREATE OR REPLACE FUNCTION check_content_fk()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Check if content_type is 'posts'
-    IF NEW.content_type = 'posts' THEN
-        IF NOT EXISTS (SELECT 1 FROM posts WHERE post_id = NEW.content_id) THEN
-            RAISE EXCEPTION 'Post ID % does not exist', NEW.content_id;
-        END IF;
-    -- Check if content_type is 'images'
-    ELSIF NEW.content_type = 'images' THEN
-        IF NOT EXISTS (SELECT 1 FROM images WHERE image_id = NEW.content_id) THEN
-            RAISE EXCEPTION 'Image ID % does not exist', NEW.content_id;
-        END IF;
-    -- Check if content_type is 'videos'
-    ELSIF NEW.content_type = 'videos' THEN
-        IF NOT EXISTS (SELECT 1 FROM videos WHERE video_id = NEW.content_id) THEN
-            RAISE EXCEPTION 'Video ID % does not exist', NEW.content_id;
-        END IF;
-    ELSE
-        RAISE EXCEPTION 'Invalid content_type %', NEW.content_type;
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger to enforce the referential integrity on the likes table
-CREATE TRIGGER trg_check_content_fk
-BEFORE INSERT OR UPDATE ON likes
-FOR EACH ROW
-EXECUTE FUNCTION check_content_fk();
 -- Insert 1000 users
 -- DO $$
 -- BEGIN
@@ -117,3 +86,34 @@ BEGIN
 END $$;
 CREATE INDEX idx_item_id on likes(content_id);
 CREATE INDEX idx_item_type on likes(content_type);
+-- Function to enforce referential integrity in the likes table
+CREATE OR REPLACE FUNCTION check_content_fk()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if content_type is 'posts'
+    IF NEW.content_type = 'posts' THEN
+        IF NOT EXISTS (SELECT 1 FROM posts WHERE post_id = NEW.content_id) THEN
+            RAISE EXCEPTION 'Post ID % does not exist', NEW.content_id;
+        END IF;
+    -- Check if content_type is 'images'
+    ELSIF NEW.content_type = 'images' THEN
+        IF NOT EXISTS (SELECT 1 FROM images WHERE image_id = NEW.content_id) THEN
+            RAISE EXCEPTION 'Image ID % does not exist', NEW.content_id;
+        END IF;
+    -- Check if content_type is 'videos'
+    ELSIF NEW.content_type = 'videos' THEN
+        IF NOT EXISTS (SELECT 1 FROM videos WHERE video_id = NEW.content_id) THEN
+            RAISE EXCEPTION 'Video ID % does not exist', NEW.content_id;
+        END IF;
+    ELSE
+        RAISE EXCEPTION 'Invalid content_type %', NEW.content_type;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to enforce the referential integrity on the likes table
+CREATE TRIGGER trg_check_content_fk
+BEFORE INSERT OR UPDATE ON likes
+FOR EACH ROW
+EXECUTE FUNCTION check_content_fk();

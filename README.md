@@ -168,7 +168,7 @@
 <h2>How to Run</h2>
 <ol>
     <li>Clone this repository.</li>
-    <li>run <code>benchmark.sh</code></li>
+    <li>run <code>benchmark.sh LIKES_PER_USER AMOUNT_OF_USERS</code></li>
 </ol>
 <hr>
 <h2>License</h2>
