@@ -28,7 +28,9 @@ Benchee.run(%{
       """)
       Postgrex.execute(sti_conn, query, [random_user.(), random_post.()])
     end
-  end,
+  end})
+
+Benchee.run(%{
   "INHERITANCE 2 select all likes for user" => fn -> 
     query = Postgrex.prepare!(inheritance_conn, "", """
 SELECT 
@@ -96,7 +98,9 @@ LEFT JOIN
 where u.user_id = $1
 """)
   Postgrex.execute(sti_conn, query, [random_user.()]) 
-  end,
+  end})
+  
+Benchee.run(%{
 "INHERITANCE 3 select users that like a post" => fn ->
   query = Postgrex.prepare!(inheritance_conn, "", """
     SELECT u.username
