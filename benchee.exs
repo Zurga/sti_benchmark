@@ -1,7 +1,14 @@
-Mix.install([{:benchee, "~> 1.3"}, {:postgrex, "~> 0.19"}])
-postgres_opts = [password: "postgres", username: "postgres"]
-{:ok, inheritance_conn} = Postgrex.start_link(Keyword.put(postgres_opts, :database, "normal_inherits"))
+Mix.install([
+  {:benchee, "~> 1.3"}, 
+  {:postgrex, "~> 0.19"}, 
+  # {:ecto_sql, "~> 3.12"}
+  #{:ecto, "~> 3.12"}
+])
+postgres_opts = [password: System.get_env("POSTGRES_PASSWORD", "postgres"), username: System.get_env("POSTGRES_USER", "postgres")]
+
+{:ok, inheritance_conn} = Postgrex.start_link(Keyword.put(postgres_opts, :database, "inheritance"))
 {:ok, sti_conn} = Postgrex.start_link(Keyword.put(postgres_opts, :database, "sti"))
+
 random_user = fn -> floor(:random.uniform * 1000) + 1 end
 random_post = fn -> floor(:random.uniform * 10000) + 1 end
 

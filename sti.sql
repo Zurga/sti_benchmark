@@ -1,3 +1,4 @@
+
 -- Create the users table
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
@@ -73,7 +74,6 @@ DECLARE
 BEGIN
     FOR users_id IN 1..USER_AMOUNT LOOP
         INSERT INTO users (username) VALUES (concat('user_', users_id));
-
         FOR i IN 1..LIKE_AMOUNT LOOP
             posts_id := (SELECT floor(random() * 10000) + 1 );
             images_id := (SELECT floor(random() * 10000) + 1 );
@@ -84,8 +84,11 @@ BEGIN
         END LOOP;
     END LOOP;
 END $$;
+
 CREATE INDEX idx_item_id on likes(content_id);
+
 CREATE INDEX idx_item_type on likes(content_type);
+
 -- Function to enforce referential integrity in the likes table
 CREATE OR REPLACE FUNCTION check_content_fk()
 RETURNS TRIGGER AS $$
@@ -117,3 +120,4 @@ CREATE TRIGGER trg_check_content_fk
 BEFORE INSERT OR UPDATE ON likes
 FOR EACH ROW
 EXECUTE FUNCTION check_content_fk();
+
