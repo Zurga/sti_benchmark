@@ -1,11 +1,3 @@
-DROP TABLE IF EXISTS video_likes CASCADE;
-DROP TABLE IF EXISTS image_likes CASCADE;
-DROP TABLE IF EXISTS post_likes CASCADE;
-DROP TABLE IF EXISTS likes CASCADE;
-DROP TABLE IF EXISTS videos CASCADE;
-DROP TABLE IF EXISTS images CASCADE;
-DROP TABLE IF EXISTS posts CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
 
 -- Create the users table
 CREATE TABLE users (
@@ -132,12 +124,21 @@ END $$;
 -- END $$;
 -- Indexes on post_likes table
 CREATE INDEX idx_post_likes_user_id ON post_likes(user_id);
+
 CREATE INDEX idx_post_likes_post_id ON post_likes(post_id);
+
+CREATE INDEX idx_post_likes_both ON post_likes(user_id, post_id);
 
 -- Indexes on image_likes table
 CREATE INDEX idx_image_likes_user_id ON image_likes(user_id);
+
 CREATE INDEX idx_image_likes_image_id ON image_likes(image_id);
+
+CREATE INDEX idx_image_likes_both ON image_likes(user_id, image_id);
 
 -- Indexes on video_likes table
 CREATE INDEX idx_video_likes_user_id ON video_likes(user_id);
+
 CREATE INDEX idx_video_likes_video_id ON video_likes(video_id);
+
+CREATE INDEX idx_video_likes_both ON video_likes(user_id, video_id);

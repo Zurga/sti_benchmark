@@ -1,3 +1,4 @@
+
 -- Create the users table
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
@@ -30,6 +31,7 @@ CREATE TABLE likes (
     -- CONSTRAINT fk_content FOREIGN KEY (content_type, content_id) 
     -- REFERENCES posts(post_id) -- Add a placeholder reference constraint to posts (we'll add dynamic triggers to handle others)
 );
+
 
 -- Insert 1000 users
 -- DO $$
@@ -73,7 +75,6 @@ DECLARE
 BEGIN
     FOR users_id IN 1..USER_AMOUNT LOOP
         INSERT INTO users (username) VALUES (concat('user_', users_id));
-
         FOR i IN 1..LIKE_AMOUNT LOOP
             posts_id := (SELECT floor(random() * 10000) + 1 );
             images_id := (SELECT floor(random() * 10000) + 1 );
@@ -84,8 +85,71 @@ BEGIN
         END LOOP;
     END LOOP;
 END $$;
+
+
 CREATE INDEX idx_item_id on likes(content_id);
-CREATE INDEX idx_item_type on likes(content_type);
+
+CREATE INDEX idx_likes_type on likes(content_type);
+
+CREATE INDEX idx_likes_user on likes(user_id);
+
+CREATE INDEX idx_likes_user_type ON likes(user_id, content_type);
+
+CREATE INDEX idx_likes_content_type ON likes(content_id, content_type);
+
+CREATE INDEX idx_likes_all ON likes(user_id, content_id, content_type);
+
+
+-- Create views of the likes table 
+
+create or replace view post_likes as
+    select * from likes
+    where content_type = 'posts';
+
+create or replace view image_likes as
+    select * from likes
+    where content_type = 'images';
+
+create or replace view video_likes as
+    select * from likes
+    where content_type = 'videos';
+
+
+-- Create *materialized* views of the likes table 
+
+create materialized view materialized_post_likes as
+    select * from likes
+    where content_type = 'posts';
+
+CREATE INDEX idx_post_likes_user_id ON materialized_post_likes(user_id);
+
+CREATE INDEX idx_post_likes_post_id ON materialized_post_likes(content_id);
+
+CREATE INDEX idx_post_likes_both ON materialized_post_likes(user_id, content_id);
+
+
+create materialized view materialized_image_likes as
+    select * from likes
+    where content_type = 'images';
+
+CREATE INDEX idx_image_likes_user_id ON materialized_image_likes(user_id);
+
+CREATE INDEX idx_image_likes_image_id ON materialized_image_likes(content_id);
+
+CREATE INDEX idx_image_likes_both ON materialized_image_likes(user_id, content_id);
+
+
+create materialized view materialized_video_likes as
+    select * from likes
+    where content_type = 'videos';
+
+CREATE INDEX idx_video_likes_user_id ON materialized_video_likes(user_id);
+
+CREATE INDEX idx_video_likes_video_id ON materialized_video_likes(content_id);
+
+CREATE INDEX idx_video_likes_both ON materialized_video_likes(user_id, content_id);
+
+
 -- Function to enforce referential integrity in the likes table
 CREATE OR REPLACE FUNCTION check_content_fk()
 RETURNS TRIGGER AS $$
@@ -117,3 +181,4 @@ CREATE TRIGGER trg_check_content_fk
 BEFORE INSERT OR UPDATE ON likes
 FOR EACH ROW
 EXECUTE FUNCTION check_content_fk();
+
