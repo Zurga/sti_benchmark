@@ -27,7 +27,7 @@ init = fn sql_file, postgres_opts ->
   |> Enum.map(fn part -> part <> ";" end)
   |> Enum.each(fn sql ->
     IO.puts sql
-    with {:error, e} <- Postgrex.query(db_conn, sql, [], timeout: 500_000) do
+    with {:error, e} <- Postgrex.query(db_conn, sql, [], timeout: 1_000_000) do
       IO.puts "Error: #{inspect e}"
       raise Postgrex.Error, message: "Could not prepare"
     end
