@@ -32,6 +32,7 @@ CREATE TABLE likes (
     -- REFERENCES posts(post_id) -- Add a placeholder reference constraint to posts (we'll add dynamic triggers to handle others)
 );
 
+
 -- Insert 1000 users
 -- DO $$
 -- BEGIN
@@ -85,9 +86,19 @@ BEGIN
     END LOOP;
 END $$;
 
+
 CREATE INDEX idx_item_id on likes(content_id);
 
-CREATE INDEX idx_item_type on likes(content_type);
+CREATE INDEX idx_likes_type on likes(content_type);
+
+CREATE INDEX idx_likes_user on likes(user_id);
+
+CREATE INDEX idx_likes_user_type ON likes(user_id, content_type);
+
+CREATE INDEX idx_likes_content_type ON likes(content_id, content_type);
+
+CREATE INDEX idx_likes_all ON likes(user_id, content_id, content_type);
+
 
 -- Function to enforce referential integrity in the likes table
 CREATE OR REPLACE FUNCTION check_content_fk()
