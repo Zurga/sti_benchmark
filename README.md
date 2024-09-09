@@ -123,9 +123,8 @@ The performance was measured for the following operations:
 ## How to Run
 
 1. Clone this repository.
-2. Run either of these: 
-    - `elixir prepare.exs LIKES_PER_USER AMOUNT_OF_USERS` (eg. `elixir prepare.exs 1500 10000`) followed by `elixir benchee.exs`
-    - `benchmark.sh LIKES_PER_USER AMOUNT_OF_USERS`
+2. Run one of these to prepare the data: `elixir prepare.exs LIKES_PER_USER AMOUNT_OF_USERS` (eg. `elixir prepare.exs 1500 10000`) or `prepare.sh LIKES_PER_USER AMOUNT_OF_USERS` 
+3. Followed by `elixir benchee.exs` to run the query benchmarks
 
 ---
 
