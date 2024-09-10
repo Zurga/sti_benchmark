@@ -49,14 +49,17 @@ defmodule Post do
     has_many :post_likes, PostLike, foreign_key: :content_id
   end
 
-  def query_by_id(id), do: from(p in __MODULE__, where: p.id == ^id)
-  def query_all, do: from(p in __MODULE__)
+  def from_source({source, id}), do: from(p in {source, __MODULE__})
+  def from_source(id), do: from(p in __MODULE__)
+
+  def query_by_id(id), do: from_source(id) |> where([p], p.id == ^id)
+  # def query_all, do: from(p in __MODULE__)
 
   def postload_by_id(id), do: query_by_id(id) |> preload(post_likes: :user) 
-  def postload_all, do: query_all() |> preload(post_likes: :user) 
+  # def postload_all, do: query_all() |> preload(post_likes: :user) 
 
   def proload_by_id(id), do: query_by_id(id) |> proload(post_likes: :user) 
-  def proload_all, do: query_all() |> proload(post_likes: :user) 
+  # def proload_all, do: query_all() |> proload(post_likes: :user) 
 end
 
 defmodule Image do

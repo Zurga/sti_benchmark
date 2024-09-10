@@ -86,7 +86,7 @@ Benchee.run(%{
   Postgrex.execute(sti_conn, query, [random_post.()]) 
   end,
 
-"STI 3b (using view) select users that like a post" => fn ->
+"STI 3b0 (using view) select users that like a post" => fn ->
   query = Postgrex.prepare!(sti_conn, "", """
     SELECT u.username
     FROM users u
@@ -95,14 +95,44 @@ Benchee.run(%{
   Postgrex.execute(sti_conn, query, [random_post.()]) 
   end,
 
-"STI 3c (using materialized view) select users that like a post" => fn ->
+"STI 3b1 (using view, Ecto without assocs) select users that like a post" => fn ->
+  Post.query_by_id(random_post.())
+  |> STI.Repo.all()
+  end,
+
+"STI 3b2 (using view, Ecto postload assocs) select users that like a post" => fn ->
+  Post.postload_by_id(random_post.())
+  |> STI.Repo.all()
+  end,
+
+"STI 3b3 (using view, Ecto proload assocs) select users that like a post" => fn ->
+  Post.proload_by_id(random_post.())
+  |> STI.Repo.all()
+  end,
+
+"STI 3c0 (using materialized view) select users that like a post" => fn ->
   query = Postgrex.prepare!(sti_conn, "", """
     SELECT u.username
     FROM users u
     WHERE u.id in (SELECT user_id from materialized_post_likes where content_id = $1)
   """)
   Postgrex.execute(sti_conn, query, [random_post.()]) 
-  end
+  end,
+
+#   "STI 3c1 (using materialized view, Ecto without assocs) select users that like a post" => fn ->
+#   Post.query_by_id({"materialized_post_like", random_post.()})
+#   |> STI.Repo.all()
+#   end,
+
+# "STI 3c2 (using materialized view, Ecto postload assocs) select users that like a post" => fn ->
+#   Post.postload_by_id(random_post.())
+#   |> STI.Repo.all()
+#   end,
+
+# "STI 3c3 (using materialized view, Ecto proload assocs) select users that like a post" => fn ->
+#   Post.proload_by_id(random_post.())
+#   |> STI.Repo.all()
+#   end,
 }
 
 )
