@@ -47,3 +47,4 @@ postgres_opts = [
 
 inheritance_conn = init.("inheritance_table.sql", Keyword.put(postgres_opts, :database, "inheritance"))
 sti_conn = init.("sti.sql", Keyword.put(postgres_opts, :database, "sti"))
+plain_conn = init.("plain.sql", Keyword.put(postgres_opts, :database, "plain_db"))
