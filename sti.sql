@@ -1,30 +1,30 @@
 
 -- Create the users table
 CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL
 );
 
 -- Create the posts, images, and videos tables
 CREATE TABLE posts (
-    post_id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     content TEXT NOT NULL
 );
 
 CREATE TABLE images (
-    image_id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     url TEXT NOT NULL
 );
 
 CREATE TABLE videos (
-    video_id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     url TEXT NOT NULL
 );
 
 -- Create the likes table with polymorphic association
 CREATE TABLE likes (
-    like_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id),
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
     content_type VARCHAR(50) NOT NULL,  -- Stores the table name (e.g., 'posts', 'images', 'videos')
     content_id INT NOT NULL,  -- Stores the ID of the liked item
     created_at TIMESTAMP DEFAULT NOW()
@@ -156,17 +156,17 @@ RETURNS TRIGGER AS $$
 BEGIN
     -- Check if content_type is 'posts'
     IF NEW.content_type = 'posts' THEN
-        IF NOT EXISTS (SELECT 1 FROM posts WHERE post_id = NEW.content_id) THEN
+        IF NOT EXISTS (SELECT 1 FROM posts WHERE id = NEW.content_id) THEN
             RAISE EXCEPTION 'Post ID % does not exist', NEW.content_id;
         END IF;
     -- Check if content_type is 'images'
     ELSIF NEW.content_type = 'images' THEN
-        IF NOT EXISTS (SELECT 1 FROM images WHERE image_id = NEW.content_id) THEN
+        IF NOT EXISTS (SELECT 1 FROM images WHERE id = NEW.content_id) THEN
             RAISE EXCEPTION 'Image ID % does not exist', NEW.content_id;
         END IF;
     -- Check if content_type is 'videos'
     ELSIF NEW.content_type = 'videos' THEN
-        IF NOT EXISTS (SELECT 1 FROM videos WHERE video_id = NEW.content_id) THEN
+        IF NOT EXISTS (SELECT 1 FROM videos WHERE id = NEW.content_id) THEN
             RAISE EXCEPTION 'Video ID % does not exist', NEW.content_id;
         END IF;
     ELSE
